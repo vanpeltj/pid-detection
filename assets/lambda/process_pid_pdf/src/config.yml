@@ -1,0 +1,59 @@
+pid_links:
+  include_regexes:
+    - '\d{3}-\d{2}-\d{3}'
+
+
+tags:
+  raw:
+    min_length: 2 # A raw tag should be at least two chars/digits
+    max_length: 7  # a raw tag should not be longer than 7 chars/digits
+
+    min_padding_x: 15 # Tag should be at least 15 pixels from the side on x-axis
+    min_padding_y: 15 # Tag should be at least 15 pixels from the side on y-axis
+
+    exclude_regexes:
+      - '^DN\d+$'             # Diameter nominale
+      - '^\d+\s*[xX]\s*\d+$'      # Size indicators like 2x2
+      - '^\d+\s*([kK][wW][hH]|[kK][wW])$'  # Power measurements
+      - '^\d+\s*m[²³]$'           # square or cube meters
+      - '\%{2}'                   # words starting with %
+      - '^N\d+$'                  # pipe name
+
+    wrong_texts: # Tags containing these words are no valid tags
+      - 'EINDMIX'
+      - 'SPOEL WATER'
+      - 'WATER'
+      - 'VERWARMING'
+      - 'PREMIX'
+      - 'ELEMENT'
+      - 'KOELGROEP'
+      - 'VLOEISTOF'
+      - '°C'
+      - 'ZAKKEN'
+      - 'xxx'
+      - 'PRODUCT'
+      - 'HOPPER'
+      - 'FOR :'
+      - 'DATUM'
+      - 'TEKEN'
+      - 'SCHAAL'
+      - 'FORMAAT'
+      - 'Alcohol'
+      - 'Volume'
+      - 'Header'
+      - 'Vacuum'
+
+  cleaned:
+    same_line:
+      base_tolerance: 0.012
+    near_right:
+      base_tolerance: 0.008
+
+    mark_as_tag_regexes:
+      - '[A-Z]{2,}\d{2,}'
+      - '\d{2,}[A-Z]{2,}'
+      - '^ADD\d+$'
+      - '^RM\d+$'
+
+
+

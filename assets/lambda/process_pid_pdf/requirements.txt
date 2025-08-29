@@ -1,0 +1,14 @@
+pYMuPDF
+pandas
+numpy
+psutil
+dacite
+psycopg[c,pool]
+psycopg2
+retry
+sqlalchemy
+tqdm
+requests
+orjson
+pytz
+PyYAML
