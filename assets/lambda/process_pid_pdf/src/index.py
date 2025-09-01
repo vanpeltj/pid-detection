@@ -6,6 +6,8 @@ import os
 import json
 import itertools
 
+from sqlalchemy import text
+
 from core.database.db import Session as db
 from helpers import (
     cleanup_tokens,
@@ -25,6 +27,8 @@ from data.equipment_list_item import equipment_list_item as data_equipment_list_
 BUCKET_NAME = os.getenv("BUCKET_NAME","643553455790-eu-west-1-files")
 
 s3 = client("s3")
+
+
 
 
 def process_document(doc, equipment_list_tags):
@@ -54,6 +58,8 @@ def process_document(doc, equipment_list_tags):
         # Step 4: Cleanup tokens (eliminate tokens that almost certaintly not a tag)
         tokens, discarded_tokens = cleanup_tokens(tokens)
 
+
+
         # Step 5: Check if tokens are matching part of a tag (like (LS3 in LS3137))
         tokens, mapped_token_dict = get_tokens_matching_part_of_equipment_list_item(tokens, equipment_list_tags, validated_tags)
 
@@ -62,14 +68,17 @@ def process_document(doc, equipment_list_tags):
         validated_tags.extend(grouped_mapped_tags)
         tokens.extend(leftover_tokens)
 
-        # Step 7: Group unmapped tokens
-        grouped_unmapped_tags, tokens = group_unmapped_tokens(tokens)
-        print(f"length: {len(grouped_unmapped_tags)}")
-        validated_tags.extend(grouped_unmapped_tags)
-
-        # Step 8: Extract tokens based on Regexes etc
+        # Step 7: Extract tokens based on Regexes etc
         regex_tags, tokens = extract_tags_from_leftovers(tokens)
         validated_tags.extend(regex_tags)
+
+
+        # Step 8: Group unmapped tokens
+        grouped_unmapped_tags, tokens = group_unmapped_tokens(tokens)
+        validated_tags.extend(grouped_unmapped_tags)
+
+
+
 
 
         page_meta = {
@@ -87,6 +96,7 @@ def process_document(doc, equipment_list_tags):
 
 
     return pages
+
 
 
 def get_file_from_s3(key):
@@ -112,7 +122,6 @@ def persist_tags(tags, tag_type, page_id, session):
     visited = {}
     pid_tags = []
     for tag in tags:
-        print(tag)
         text = tag.get("text")
         if text in visited.keys():
             value = visited[text] + 1
@@ -120,11 +129,10 @@ def persist_tags(tags, tag_type, page_id, session):
             value = 1
         visited[text] = value
 
-        tag_name = f"{text}_{str(value)}"
         pid_tag = data_pid_tag(
             pid_file_page_id=page_id,
             tag_value=text,
-            name=tag_name,
+            name=tag.get("id"),
             type=tag_type,
             sub_type= tag.get("token_type"),
             x0=tag.get("x0"),
@@ -140,25 +148,25 @@ def persist_tags(tags, tag_type, page_id, session):
 def persist_pid_links(links, page_id, file_id):
     if len(links) == 0:
         return
-    document_identifier = max(links, key=lambda l: l.x0 * l.y0)
+    document_identifier = max(links, key=lambda l: l.get("x0") * l.get("y0"))
     pid_file = data_pid_file.from_id(file_id)
-    pid_file.technical_name = document_identifier.text
+    pid_file.technical_name = document_identifier.get("text")
     pid_file.save()
 
 
     for l in links:
-        if l.id == document_identifier.id:
+        if l.get("id") == document_identifier.get("id"):
             continue
 
         pid_file_link = data_pid_file_link(
             pid_file_page_id=page_id,
             pid_file_id=file_id,
             type ="RAW",
-            name = l.text,
-            x1= l.x0,
-            x2= l.x1,
-            y1=l.y0,
-            y2=l.y1,
+            name = l.get("text"),
+            x0=l.get("x0"),
+            x1=l.get("x1"),
+            y0=l.get("y0"),
+            y1=l.get("y1"),
             image_s3_key=""
         )
         pid_file_link.save()
@@ -170,6 +178,9 @@ def persist_results(results, file_id):
     with db() as session:
         for page in results:
             page_id = persist_page_info(page, file_id)
+
+            session.execute(text(f'DELETE FROM "public"."pid_tag" WHERE pid_file_page_id={page_id}'))
+            session.commit()
 
             print("Persist raw tags")
             raw_tags = page.get("raw_tokens",[])
@@ -199,7 +210,7 @@ def persist_results(results, file_id):
 def get_tags_from_equipment_list(equipment_list_items):
     tags = []
     for item in equipment_list_items:
-        if item.field == "TAG":
+        if item.field in [ "TAG","Tag","tag"]:
             tags.append(str(item.value).upper())
     return tags
 
@@ -259,12 +270,12 @@ event = {
             "body" : json.dumps(
                 {
                     "job_id":1,
-                    "file_id":1,
+                    "file_id":2,
                     #"disable_persist": True
                 }
             )
         }
     ]
 }
-handler(event,None)
+#handler(event,None)
 

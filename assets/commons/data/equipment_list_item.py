@@ -44,11 +44,19 @@ class equipment_list_item(SentoBaseData):
     _get_all_filter_meta: dict[str, dict] = {
         "equipment_list_id": {"condition": "==", "column": "equipment_list_id"},
         "row_id": {"condition": "==", "column": "row_id"},
+        "column_id": {"condition": "==", "column": "column_id"},
         "field": {"condition": "==", "column": "field"},
     }
-    _fields: list[str] = ["id", "equipment_list_id", "row_id", "field", "value"]
+    _fields: list[str] = [
+        "id",
+        "equipment_list_id",
+        "row_id",
+        "column_id",
+        "field",
+        "value",
+    ]
     _primary_keys: list[str] = ["id"]
-    _unique_fields: list[str] = ["equipment_list_id", "row_id", "field"]
+    _unique_fields: list[str] = ["equipment_list_id", "row_id", "column_id", "field"]
     _non_unique_fields: list[str] = ["value"]
     # Only use set when ordering is not important. (Is important for bulk insert)
     _nullable_fields: set[str] = set(
@@ -65,6 +73,7 @@ class equipment_list_item(SentoBaseData):
         id: int = None,
         equipment_list_id: int = None,
         row_id: int = None,
+        column_id: int = None,
         field: str = None,
         value: str = None,
         *args,
@@ -84,6 +93,10 @@ class equipment_list_item(SentoBaseData):
             self.__row_id = None
         else:
             self.row_id = row_id
+        if column_id is None:
+            self.__column_id = None
+        else:
+            self.column_id = column_id
         if field is None:
             self.__field = None
         else:
@@ -126,6 +139,15 @@ class equipment_list_item(SentoBaseData):
     def row_id(self, new_row_id):
         if not hasattr(self, "__row_id") or new_row_id is not None:
             self.__row_id = int(new_row_id) if new_row_id is not None else None
+
+    @property
+    def column_id(self):
+        return self.__column_id
+
+    @column_id.setter
+    def column_id(self, new_column_id):
+        if not hasattr(self, "__column_id") or new_column_id is not None:
+            self.__column_id = int(new_column_id) if new_column_id is not None else None
 
     @property
     def field(self):
@@ -258,9 +280,11 @@ class equipment_list_item(SentoBaseData):
 
     @classmethod
     def from_dict(cls, new_obj: Dict):
-        if not {"equipment_list_id", "row_id", "field"}.issubset(new_obj.keys()):
+        if not {"equipment_list_id", "row_id", "column_id", "field"}.issubset(
+            new_obj.keys()
+        ):
             raise KeyError(
-                "dict should contain at least equipment_list_id,row_id,field"
+                "dict should contain at least equipment_list_id,row_id,column_id,field"
             )
         return cls(**new_obj)
 
@@ -620,6 +644,7 @@ class equipment_list_item(SentoBaseData):
             id=self.__id,
             equipment_list_id=self.__equipment_list_id,
             row_id=self.__row_id,
+            column_id=self.__column_id,
             field=self.__field,
             value=self.__value,
         )
@@ -629,6 +654,7 @@ class equipment_list_item(SentoBaseData):
             id=self.__id,
             equipment_list_id=self.__equipment_list_id,
             row_id=self.__row_id,
+            column_id=self.__column_id,
             field=self.__field,
             value=self.__value,
             modified_on=datetime.now(),

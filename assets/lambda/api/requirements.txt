@@ -17,3 +17,4 @@ numpy
 psutil
 dacite
 s3fs
+openpyxl

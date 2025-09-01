@@ -80,6 +80,9 @@ def get_tokens(page):
         rect = annot.rect
         content = annot.info.get("content", "")
 
+        #if content not in ["RV","107","08"]:
+            #continue
+
         token = Token(
             content,
             x0=rect.x0,
@@ -125,10 +128,10 @@ def get_tokens_matching_part_of_equipment_list_item(tokens, equipment_list_tags,
             if tag in used_equipment_list_tags:
                 continue
 
-            if tag not in mapped_tag_dict.keys():
-                mapped_tag_dict[tag] = []
-
             if token.text.upper() in tag:
+                if tag not in mapped_tag_dict.keys():
+                    mapped_tag_dict[tag] = []
+
                 mapped_tag_dict[tag].append(token)
                 match_found = True
 
@@ -158,6 +161,7 @@ def validate_grouped_token(raw_group, tag):
 def group_mapped_tokens(mapped_token_dict: Dict):
     # Need to be careful. Tokens can be a candidate for multiple tags so it can be a leftover for one but a match for another.
     # we cannot just take the sum of all leftovers to determine the leftovers.
+
     possible_leftovers = []
     matched_tokens = []
     group_tokens = []
@@ -169,6 +173,7 @@ def group_mapped_tokens(mapped_token_dict: Dict):
             raise ValueError("multiple groups found")
         else:
             # No group found (TODO: handle this)
+            possible_leftovers.extend(leftovers)
             continue
 
 
@@ -187,6 +192,7 @@ def group_mapped_tokens(mapped_token_dict: Dict):
 
 
     matched_ids = [t.id for t in matched_tokens]
+    print("matched ids", matched_ids)
     leftover_tokens = []
     seen_ids = []
     for l in list(possible_leftovers):
@@ -195,7 +201,9 @@ def group_mapped_tokens(mapped_token_dict: Dict):
         if l.id not in matched_ids:
             leftover_tokens.append(l)
         seen_ids.append(l.id)
+
     return group_tokens, leftover_tokens
+
 
 def group_unmapped_tokens(tokens):
     group_tokens = []
@@ -374,7 +382,6 @@ def group_tags(tokens):
 
     # 4) leftover standalone numbers/alphas if needed
     leftovers = [token for token in tokens if token.id not in used]
-
     return groups, leftovers
 
 

@@ -36,6 +36,7 @@ class equipment_list_item(Base):
         index=True,
     )
     row_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    column_id: Mapped[int] = mapped_column(Integer, nullable=False)
     field: Mapped[str] = mapped_column(String, nullable=True)
     value: Mapped[str] = mapped_column(String, nullable=True)
     modified_on: Mapped[datetime] = mapped_column(
@@ -45,6 +46,7 @@ class equipment_list_item(Base):
         UniqueConstraint(
             "equipment_list_id",
             "row_id",
+            "column_id",
             "field",
             name="equipment_list_item_uc",
             postgresql_nulls_not_distinct=True,

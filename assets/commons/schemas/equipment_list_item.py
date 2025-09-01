@@ -13,6 +13,7 @@ class equipment_list_item(BaseModel):
      id: Optional[int]
      equipment_list_id: int
      row_id: int
+     column_id: int
      field: Optional[str]
      value: Optional[str]
      modified_on: Optional[datetime]
@@ -23,6 +24,7 @@ class equipment_list_item(BaseModel):
 class equipment_list_itemCreate(BaseModel):
     equipment_list_id: int
     row_id: int
+    column_id: int
     field: Optional[str]
     value: Optional[str]
     class Config:
@@ -38,6 +40,7 @@ class equipment_list_itemUpsert(BaseModel):
     id: Optional[int]
     equipment_list_id: int
     row_id: int
+    column_id: int
     field: Optional[str]
     value: Optional[str]
     class Config:

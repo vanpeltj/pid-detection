@@ -6,8 +6,8 @@ import matplotlib.patches as patches
 from core.database.db import Session as db
 
 with db() as session:
-    all_tags  = data_pid_tag.get_all(limit=1000,db=session, pid_file_page_id = 1)
-    page = data_pid_file_page.from_id(1)
+    all_tags  = data_pid_tag.get_all(limit=1500,db=session, pid_file_page_id = 2)
+    page = data_pid_file_page.from_id(2)
 
 fig, ax = plt.subplots(figsize=(30,24))
 
@@ -18,6 +18,7 @@ for tag in all_tags:
 
     if tag.type == "DISCARDED_TOKENS":
         continue
+    print(tag.id, tag.tag_value)
 
     color = "blue"
     if tag.type == "VALIDATED":

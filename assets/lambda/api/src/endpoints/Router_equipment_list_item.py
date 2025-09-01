@@ -15,11 +15,11 @@ from datetime import datetime
 
 from models.equipment_list_item import equipment_list_item as Modelequipment_list_item
 
-def get_all_filter_function(equipment_list_id:int=None,row_id:int=None,field:Optional[str]=None):
-	return {"equipment_list_id":equipment_list_id,"row_id":row_id,"field":field}
+def get_all_filter_function(equipment_list_id:int=None,row_id:int=None,column_id:int=None,field:Optional[str]=None):
+	return {"equipment_list_id":equipment_list_id,"row_id":row_id,"column_id":column_id,"field":field}
 
 
-get_all_filter_meta = {'equipment_list_id': {'condition': '==', 'column': 'equipment_list_id'}, 'row_id': {'condition': '==', 'column': 'row_id'}, 'field': {'condition': '==', 'column': 'field'}}
+get_all_filter_meta = {'equipment_list_id': {'condition': '==', 'column': 'equipment_list_id'}, 'row_id': {'condition': '==', 'column': 'row_id'}, 'column_id': {'condition': '==', 'column': 'column_id'}, 'field': {'condition': '==', 'column': 'field'}}
 
 
 model_router = SentoRouter(
@@ -36,5 +36,5 @@ model_router = SentoRouter(
                     update_one_callback=False,
                     delete_one_callback=False,
                     delete_all_callback=False,
-                    unique_fields=['equipment_list_id', 'row_id', 'field']
+                    unique_fields=['equipment_list_id', 'row_id', 'column_id', 'field']
                 )
