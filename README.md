@@ -1,58 +1,22 @@
 
-# Welcome to your CDK Python project!
+# PID Detection
 
-This is a blank project for CDK development with Python.
+## Step 1: Create project on API 
+https://r23s7xh7ri.execute-api.eu-west-1.amazonaws.com/prod/docs#/Project/route_project_post
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Step 2: Upload PID file on API
+https://r23s7xh7ri.execute-api.eu-west-1.amazonaws.com/prod/docs#/Pid_file/upload_pid_file_upload_post
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+## Step 3 Upload equipment list on API
+https://r23s7xh7ri.execute-api.eu-west-1.amazonaws.com/prod/docs#/Equipment/upload_equipment_upload_post
+This is optional but can help the tag detection a lot
+You can upload an excel file which consists of headers and a values. So make sure to remove all other stuff from the Excel.
 
-To manually create a virtualenv on MacOS and Linux:
+## Step 4: Process PID file via API
+https://r23s7xh7ri.execute-api.eu-west-1.amazonaws.com/prod/docs#/Pid_file/process_pid_file_process_post
 
-```
-$ python -m venv .venv
-```
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+## Step 5: Run plotting of tags 
+in the directory 'deployment/assets/lambda/process_pid_pdf/src', is the file plot_results.py
 
-```
-$ source .venv/bin/activate
-```
-
-If you are a Windows platform, you would activate the virtualenv like this:
-
-```
-% .venv\Scripts\activate.bat
-```
-
-Once the virtualenv is activated, you can install the required dependencies.
-
-```
-$ pip install -r requirements.txt
-```
-
-At this point you can now synthesize the CloudFormation template for this code.
-
-```
-$ cdk synth
-```
-
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
-
-## Useful commands
-
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
-
-Enjoy!
+You will have to install some python libraries to make it work..

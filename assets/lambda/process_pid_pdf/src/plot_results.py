@@ -6,8 +6,9 @@ import matplotlib.patches as patches
 from core.database.db import Session as db
 
 with db() as session:
+    ## FILL IN THE pid_file_pag_id &
     all_tags  = data_pid_tag.get_all(limit=1500,db=session, pid_file_page_id = 2)
-    page = data_pid_file_page.from_id(2)
+    page = data_pid_file_page.from_id(id=2)
 
 fig, ax = plt.subplots(figsize=(30,24))
 
